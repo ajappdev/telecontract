@@ -1,0 +1,9 @@
+{% extends "auth/base.html" %}
+{% load i18n %}
+
+{% block page_content %}
+
+  <p>{% trans "Logged out!" %}</p>
+  <a href="{% url 'login'%}">{% trans "Click here to login again." %}</a>
+  
+{% endblock %}

@@ -1,0 +1,273 @@
+<div id="chat_container">
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script>
+
+
+    var typing_html = `
+                <p class="typing_phrase">
+                <span style="font-style: italic; font-weight: 600; font-size: 0.8em; color: grey;">Typing</span><br>
+                <a href="https://imgbb.com/"><img style="height:20px;" src="https://i.ibb.co/DfPx3zy/Ellipsis-2-1s-200px-1.gif" alt="Ellipsis-2-1s-200px-1" border="0"></a>
+                </p>
+                `
+
+    var hello_html = `
+                <div class="talk-bubble tri-right left-top">
+                    <div class="talktext">
+                        <p>Hi there! &#128075;<br>I just want to help you choose the right surf rod for your needs &#128512;</p>
+                    </div>
+                </div>
+                `
+    var permission_html = `
+                <div class="talk-bubble tri-right left-top">
+                    <div class="talktext">
+                        <p>Can you give me more details about your fishing objectives and conditions?</p>
+                    </div>
+                </div>
+                `
+
+    var surf_condition_question = `
+                <div class="talk-bubble tri-right left-top">
+                    <div class="talktext">
+                        <p>For example, how would you describe the surf conditions in your area? Choose from the choices below</p>
+                    </div>
+                </div>
+                `
+
+    var surf_condition_answer = `
+                <div class="user_choices_containter">
+                    <div class="user_choice inline-div">Rough</div> <div class="user_choice inline-div">Moderate swell</div> <div class="user_choice inline-div">Slight swell</div> <div class="user_choice inline-div">Calm</div>
+                </div>
+                `
+
+    var casting_distance_question = `
+                <div class="talk-bubble tri-right left-top">
+                    <div class="talktext">
+                        <p>OK! Now, how far do you usually need to cast in order to get some bites?</p>
+                    </div>
+                </div>
+                `
+
+    var casting_distance_answer = `
+                <div class="user_choices_containter">
+                        <div class="user_choice inline-div">Less than 40 yards</div> <div class="user_choice inline-div">40-70 yards</div> <div class="user_choice inline-div">More than 70 yards</div>
+                </div>
+                `
+
+    var fish_size_question = `
+                <div class="talk-bubble tri-right left-top">
+                        <div class="talktext">
+                            <p>What is the common size of caught fish in your area</p>
+                        </div>
+                </div>
+                `
+
+
+    var fish_size_answer = `
+                <div class="user_choices_containter">
+                    <div class="user_choice inline-div">Lighter than 2 lb</div> <div class="user_choice inline-div">2-10 lb</div> <div class="user_choice inline-div">10-20 lb</div> <div class="user_choice inline-div">Heavier than 20 lb</div>
+                </div>
+                `
+
+
+var wind_question = `
+                <div class="talk-bubble tri-right left-top">
+                    <div class="talktext">
+                        <p>Is it often windy where you fish?</p>
+                    </div>
+                </div>
+                `
+
+
+var wind_answer = `
+                <div class="user_choices_containter">
+                    <div class="user_choice inline-div">No</div> <div class="user_choice inline-div">Yes</div>
+                </div>
+                `
+
+
+var structures_question = `
+                <div class="talk-bubble tri-right left-top">
+                    <div class="talktext">
+                        <p>What is the nature of the underwater terrains you fish?</p>
+                    </div>
+                </div>
+                `
+
+
+var structures_answer = `
+                <div class="user_choices_containter">
+                    <div class="user_choice inline-div">Sandy and clear</div> <div class="user_choice inline-div">Mixed seabed</div> <div class="user_choice inline-div">Rocky and rough</div>
+                </div>
+                `
+
+    var chat_container_html = `
+            <div id="top_bar_div">
+                <div id="image-alae" class="inline-div"></div><div id="name_alae" class="inline-div"><span>Alae</span></div>
+            </div>
+            <div id="chat-area">
+            </div>
+            `
+
+    $("#chat_container").html(chat_container_html);
+    $("#chat-area").animate({ scrollTop: $('#chat-area').prop("scrollHeight")}, 1000);
+
+    setTimeout(function(){
+        
+        $("#chat-area").append(typing_html)
+        setTimeout(function(){
+            $(".typing_phrase").remove()
+            $("#chat-area").append(hello_html);
+            $("#chat-area").animate({ scrollTop: $('#chat-area').prop("scrollHeight")}, 1000);
+            setTimeout(function(){
+                $("#chat-area").append(typing_html)
+                $("#chat-area").animate({ scrollTop: $('#chat-area').prop("scrollHeight")}, 1000);
+                setTimeout(function(){
+                    $(".typing_phrase").remove()
+                    $("#chat-area").append(permission_html);
+                    $("#chat-area").animate({ scrollTop: $('#chat-area').prop("scrollHeight")}, 1000);
+                    setTimeout(function(){
+                        $("#chat-area").append(typing_html)
+                        $("#chat-area").animate({ scrollTop: $('#chat-area').prop("scrollHeight")}, 1000);
+                        setTimeout(function(){
+                            $(".typing_phrase").remove()
+                            $("#chat-area").append(surf_condition_question);
+                            $("#chat-area").animate({ scrollTop: $('#chat-area').prop("scrollHeight")}, 1000);
+                                setTimeout(function(){
+                                        $(".typing_phrase").remove()
+                                        $("#chat-area").append(surf_condition_answer)
+                                        $("#chat-area").animate({ scrollTop: $('#chat-area').prop("scrollHeight")}, 1000);
+                                    }, 2000);
+                        }, 2000);
+                    }, 500);
+                }, 2000);
+            }, 2000);
+        }, 2000);
+
+    }, 500);
+
+
+
+</script>
+
+<!-- ///////////////////////////////////////////// -->
+<!-- ///////////////////////////////////////////// -->
+<!-- ///////////////////////////////////////////// -->
+<!-- Style -->
+<!-- ///////////////////////////////////////////// -->
+<!-- ///////////////////////////////////////////// -->
+<!-- ///////////////////////////////////////////// -->
+<style>
+.tri-right.border.left-top:before {
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+  left: -40px;
+	right: auto;
+  top: -8px;
+	bottom: auto;
+	border: 32px solid;
+	border-color: #666 transparent transparent transparent;
+}
+
+.user_choice
+{
+    background: #2ed9b0;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.user_choice:hover
+{
+    background:#86e7d1;
+}
+
+.tri-right.left-top:after{
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+  left: -20px;
+	right: auto;
+  top: 0px;
+	bottom: auto;
+	border: 22px solid;
+	border-color: #e0eaff transparent transparent transparent;
+}
+.talk-bubble {
+    padding: 10px;
+    display: inline-block;
+    position: relative;
+    width: 200px;
+    height: auto;
+    background-color: #e0eaff;
+    margin-bottom:10px;
+}
+
+
+#chat-area
+{
+    margin-top:85px;
+    padding:30px;
+    overflow-y: scroll;
+    height:450px;
+    z-index:1
+}
+
+    #image-alae
+    {
+        height: 70px;
+    margin-left: 10px;
+    margin-top: 5px;
+    width: 70px;
+    border-radius: 50%;
+    background: grey;
+    z-index:5000000;
+    }
+    .inline-div
+    {
+        display: inline-block;
+        vertical-align:top;
+    }
+    #chat_container
+    {
+        width: 350px;
+        height: 600px;
+        border-radius: 10px 10px 0px 0px;
+        border: 5px solid #47a7dd;
+        border-bottom: none;
+        position: absolute;
+        bottom: 0;
+        right: 30px;
+        min-width: 300px;
+    }
+    #top_bar_div
+    {
+        height:50px;
+        position:absolute;
+        top:0px;
+        width:101%;
+        left:0;
+        right:0;
+        margin:auto;
+        background: #47a7dd;
+    }
+    #name_alae
+    {
+        color: white;
+        position: relative;
+        margin-left: 10;
+        top: 11;
+        font-size: 1.5em;
+    }
+</style>
+    

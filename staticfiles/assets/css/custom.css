@@ -1,0 +1,111 @@
+.accordion-no-padding-left
+{
+    padding-left:0 !important;
+    padding-top:0 !important;
+    border-top: none !important;
+    font-size:0.7em;
+}
+.accordion-content-no-padding-left
+{
+    padding-left:0 !important;
+}
+.p-no-m
+{
+    margin:0;
+}
+.text-muted-title
+{
+    font-weight:600;
+    font-size:1.2em;
+}
+.text-little
+{
+    font-size:0.8em;
+}
+.versions_figures_projects_list
+{
+    position:relative;
+    bottom:12px;
+}
+.point-separator
+{
+font-size: 2em;
+margin-right: 5px;
+margin-left: 5px;
+position: relative;
+bottom: 2px;
+color:rgb(190, 190, 190)
+}
+.bg-theme-orange
+{
+    background-color:#f76534 !important;
+}
+.theme-orange
+{
+    color: #f76534 !important;
+}
+.user-role-assigned-users
+{
+    position:relative;
+    bottom:10px;
+    font-size: 0.9em;
+}
+.user-name-assigned-users
+{
+    font-weight:600;
+}
+.no-padding-bottom
+{
+    padding-bottom:0px;
+}
+.txt-right
+{
+    text-align:right;
+}
+.row_details_table
+{
+    display:none;
+}
+.td_break_spaces
+{
+    white-space: break-spaces;
+}
+.bg-white
+{
+    background:white;
+}
+.descriptive_table_key
+{
+    background: #404e67;
+    color: white;
+    font-weight: 600;
+    width: 200px;
+    border: 1px solid rgb(181, 192, 203) !important;
+}
+.descriptive_table_value
+{
+    border: 1px solid rgb(181, 192, 203) !important;
+}
+.hidden
+{
+    display:none;
+}
+.swal2-html-container
+{
+    overflow: hidden !important;
+}
+.text-end
+{
+    text-align:right !important;
+}
+
+.btn-sm
+{
+    padding: 5px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+.theme-danger
+{
+    color:#fe909d !important;
+}

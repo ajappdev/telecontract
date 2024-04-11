@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'head.html' %}
+
+<body>
+<!-- Pre-loader start -->
+{% include 'loader.html' %}
+<!-- Pre-loader end -->
+<div id="pcoded" class="pcoded">
+    <div class="pcoded-overlay-box"></div>
+    <div class="pcoded-container navbar-wrapper">
+
+        {% include 'navbar.html' %}
+
+        <div class="pcoded-main-container">
+            <div class="pcoded-wrapper">
+                {% include 'sidebar.html' %}
+                <div class="pcoded-content">
+                    <div class="pcoded-inner-content">
+                        <!-- Main-body start -->
+                        <div class="main-body">
+                            <div class="page-wrapper">
+                                <!-- Page-header start -->
+                                <div class="page-header">
+                                    <div class="row align-items-end">
+                                        <div class="col-lg-8">
+                                            <div class="page-header-title">
+                                                <div class="d-inline">
+                                                    <h4>{{page_title}}</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Page-header end -->
+
+                                <div class="page-body">
+                                    {% block page_content %}
+                                    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+                                    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+                                    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+                                    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+                                    <!-- Here is where your content get inserted -->
+                                    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+                                    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+                                    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+                                    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'scripts.html' %}
+</body>
+
+</html>
