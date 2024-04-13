@@ -4,13 +4,21 @@
         <div class="pcoded-navigatio-lavel">Navigation</div>
         <ul class="pcoded-item pcoded-left-item">
             <li class="">
-                <a href="{% url 'landing_page' %}" target="_blank">
+                <a href="{% url 'landing_page' %}">
                     <span class="pcoded-micon"><i class="fas fa-home"></i></span>
                     <span class="pcoded-mtext">Home</span>
                 </a>
-                <a href="{% url 'manage_users' %}" target="_blank">
+                <a href="{% url 'contrats' %}">
+                    <span class="pcoded-micon"><i class="fas fa-file"></i></span>
+                    <span class="pcoded-mtext">Contrats</span>
+                </a>
+                <a href="{% url 'manage_users' %}">
                     <span class="pcoded-micon"><i class="fas fa-users"></i></span>
-                    <span class="pcoded-mtext">Manage users</span>
+                    <span class="pcoded-mtext">Gérer les utilisateurs</span>
+                </a>
+                <a href="{% url 'logout' %}">
+                    <span class="pcoded-micon"><i class="fas fa-power-off"></i></span>
+                    <span class="pcoded-mtext">Se déconnecter</span>
                 </a>
             </li>
         </ul>

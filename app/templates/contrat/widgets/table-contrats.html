@@ -1,0 +1,150 @@
+{% load i18n %}
+{% load humanize %}
+
+{% if contrats|length > 0 %}
+
+{% for contrat in contrats %}
+<div class="contrat_card card social-card bg-simple-c-white">
+    <div class="card-block">
+        <div id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="accordion-panel">
+                <div class="accordion-heading" role="tab" id="headingOne">
+                    <h3 class="card-title accordion-title">
+                        <a class="accordion-msg accordion_header accordion-no-padding-left scale_active collapsed contrat_name pb-0" data-toggle="collapse" data-parent="#accordion" href="#{{contrat.id|safe}}" aria-expanded="false" aria-controls="collapseOne">
+                            N° {{ contrat.numero_client }} {% if contrat.is_termine %} <span class="badge bg bg-danger">Terminé</span> {% endif %}
+                            <span class="hidden contrat_id_span">{{contrat.id|safe}}</span>
+                        </a>
+                        <div class="row" style="display: flex; align-items: center;">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mb-3 mt-3 text-center">
+                                <p class="text-muted contrats_figures_projects_list p-no-m mb-1" style="font-size:0.7em; color: #5c75a2 !important; font-weight: 600;"><i class="fas fa-building"></i> {{ contrat.raison_sociale }}</p>
+                                <p class="text-muted contrats_figures_projects_list p-no-m mb-0">{{ contrat.sexe_interlocuteur }} {{ contrat.nom_interlocuteur }} {{ contrat.prenom_interlocuteur }}</p>
+                                <p class="text-muted contrats_figures_projects_list p-no-m mb-0"><b>Durée : {{ contrat.duree_contrat }} mois</b></p>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mb-3 mt-3" style="margin: 0 !important;">
+                                <p class="text-muted contrats_renouvelements_projects_list p-no-m mb-0 text-center">
+                                    <i class="fas fa-phone"></i> {{contrat.nb_articles|intcomma}} articles<br>
+                                    <span style="font-size:0.5em;">Soit un total mensuel de</span><br>
+                                    <span style="color:#c75966 !important; font-size:0.7em;">{{contrat.total_mensualites|floatformat:2|intcomma}} CHF</span>
+                                </p>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mb-3 mt-3" style="margin: 0 !important;">
+                                <p class="text-muted contrats_renouvelements_projects_list p-no-m mb-0 text-center">
+                                    <i class="fas fa-clock"></i> {{contrat.jours_au_payment|intcomma}} jours<br>
+                                    <span style="font-size:0.5em;">jusqu'au prochain renouvelement</span><br>
+                                    <span style="color:#59c78a !important; font-size:0.8em;">{{contrat.montant_renouvelement|floatformat:2|intcomma}} CHF</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div style="text-align:right; margin-top:20px;">
+                            <a style="display: inline-block; padding: 0; position: relative; bottom: 2px;" class="accordion-msg accordion-no-padding-left scale_active collapsed contrat_name pb-0" data-toggle="collapse" data-parent="#accordion" href="#{{contrat.id|safe}}" aria-expanded="false" aria-controls="collapseOne">
+                                <button class="btn btn-sm btn-success renouvelements_button"><i class="fas fa-retweet"></i> {{contrat.nb_renouvelements|intcomma}} Prolongations</button>
+                            </a>
+                            <a class="btn btn-sm btn-primary" href="{% url 'edit_contrat' contrat.id|safe %}"><i class="fas fa-pen"></i> Modifier</a>
+                            <button class="delete-contrat-btn btn btn-sm btn-danger"><i class="fas fa-trash"></i> Supprimer</button>
+                        </div>
+                    </h3>
+                </div>
+                <div id="{{contrat.id|safe}}" class="panel-collapse in collapse mt-4" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="accordion-content accordion-content-no-padding-left accordion-desc">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 cycle-detail-right">
+                                <div class="table-responsive">
+                                    {% if contrat.cycles|length > 0 %}
+                                    <table id="child-table" class="table nowrap table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="hidden">Cycle ID</th>
+                                                <th>Date debut</th>
+                                                <th>Date fin</th>
+                                                <th>Statut</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for t in contrat.cycles %}
+                                            <tr role="row" class="cycle_row_details">
+                                                <td class="hidden cycle_id cycle_{{t.id}}">{{t.id|safe}}</td>
+                                                <td class="sorting_1">{{t.date_debut}}</td>
+                                                <td class="">{{t.date_fin}}</td>
+                                                <td class="" style="min-width: 200px;">
+                                                        <p class="text-muted mb-0">
+                                                            {% if t.statut == 'En cours' %}
+                                                                {{t.statut}}
+                                                                <span class="f-right">{{t.pourcentage_cycle|floatformat:0|intcomma}}%</span></p>
+                                                                <div class="progress">
+                                                                    <div class="progress-bar-primary bg-simple-c-yellow" style="width: {{t.pourcentage_cycle|safe}}%"></div>
+                                                                </div>
+                                                            {% elif t.statut == 'Payé' %}
+                                                                {{t.statut}} le {{t.paye_le}}
+                                                                <span class="f-right">{{t.pourcentage_cycle|floatformat:0|intcomma}}%</span></p>
+                                                                <div class="progress">
+                                                                    <div class="progress-bar-success bg-simple-c-yellow" style="width: {{t.pourcentage_cycle|safe}}%"></div>
+                                                                </div>
+                                                            {% elif t.statut == 'Terminé' %}
+                                                                {{t.statut}}
+                                                                <span class="f-right">{{t.pourcentage_cycle|floatformat:0|intcomma}}%</span></p>
+                                                                <div class="progress">
+                                                                    <div class="progress-bar-secondary bg-simple-c-yellow" style="width: {{t.pourcentage_cycle|safe}}%"></div>
+                                                                </div>
+                                                            {% endif %}
+
+                                                </td>
+                                                <td class="text-end">
+                                                    {% if t.statut == 'En cours' %}
+                                                        <button title="Modifier le cycle de payment" class="modifier_cycle_button btn btn-sm btn-secondary"><i class="fas fa-pen"></i></button>
+                                                        <button title="Marquer ce cycle comme payé" class="payer_cycle_button btn btn-sm btn-success"><i class="fas fa-check"></i></button>
+                                                        <button title="Supprimer le cycle de payment" class="supprimer_cycle_button btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                                        <a href="{% url 'get_prolongation_file' t.id|safe %}" title="Télécharger fichir de prolongation" class="update_cycle_button btn btn-sm btn-warning"><i class="fas fa-file"></i></a>
+                                                        {% else %}
+                                                        <a href="{% url 'get_prolongation_file' t.id|safe %}" title="Télécharger fichir de prolongation" class="update_cycle_button btn btn-sm btn-warning"><i class="fas fa-file"></i></a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="alert alert-info background-info">
+    Il n'y a aucun contrat pour le moment</a> 
+</div>
+{% endif %}
+
+{% if contrats.has_other_pages %}
+{% include 'widgets/pagination.html' with page_obj=contrats  %}
+{% endif %}
+
+
+<style>
+    .contrats_figures_projects_list {
+        line-height: 20px !important;
+    }
+    .accordion_header
+    {
+        background: #f0f0f0;
+        padding: 10px !important;
+        margin-bottom: 10px;
+    }
+    .contrats_renouvelements_projects_list {
+        font-size: 1.1em;
+        line-height: 30px;
+        color: #404e67 !important;
+        white-space: nowrap;
+    }
+    td
+    {
+        vertical-align: middle !important;
+    }
+</style>

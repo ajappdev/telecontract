@@ -68,7 +68,7 @@
                         <td class="table_u_nom">{{user.complete_name|default_if_none:""}}</td>
                         <td class="table_u_email">{{user.user.email|default_if_none:""}}</td>
                         {% if user.user.id != request.user.id %}
-                        <td class="text-end text-danger"><button class="delete_user btn btn-sm btn-danger">Supprimer</button> <button class="manage_permissions btn btn-sm btn-success">Permissions</button></td>
+                        <td class="text-end text-danger"><button class="delete_user btn btn-sm btn-danger">Supprimer</button></td>
                         {% endif %}
                     </tr>
                     {% endfor %}

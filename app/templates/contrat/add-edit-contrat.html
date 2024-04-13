@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="row align-items-end mb-3">
+    <div class="col-lg-12">
+        <div class="page-header-title">
+            <div class="d-inline">
+                <h4>Créer nouveau contrat</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-5 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label" for="id_date_contrat">Date contrat</label>
+                    <input type="text" class="form-control" id="id_date_contrat" name="date_contrat" value="{{contrat.date_contrat}}">
+                </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_numero_client">Numéro client</label>
+                        <input type="text" class="form-control" id="id_numero_client" name="numero_client" value="{{contrat.numero_client}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_raison_sociale">Raison sociale</label>
+                        <input type="text" class="form-control" id="id_raison_sociale" name="raison_sociale" value="{{contrat.raison_sociale}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_rue">Rue</label>
+                        <input type="text" class="form-control" id="id_rue" name="rue" value="{{contrat.rue}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_zipcode">Case postale</label>
+                        <input type="text" class="form-control" id="id_zipcode" name="zipcode" value="{{contrat.zipcode}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_npa">NPA</label>
+                        <input type="text" class="form-control" id="id_npa" name="npa" value="{{contrat.npa}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_localite">Localité</label>
+                        <input type="text" class="form-control" id="id_localite" name="localite" value="{{contrat.localite}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_sexe_interlocuteur">Sexe interlocuteur</label>
+                        <select class="form-control" id="id_sexe_interlocuteur" name="sexe_interlocuteur">
+                            <option value="" selected disabled>Choisir un sexe</option>
+                            <option value="M.">M.</option>
+                            <option value="Mme.">Mme.</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_nom_interlocuteur">Nom interlocuteur</label>
+                        <input type="text" class="form-control" id="id_nom_interlocuteur" name="nom_interlocuteur" value="{{contrat.nom_interlocuteur}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_prenom_interlocuteur">Prénom interlocuteur</label>
+                        <input type="text" class="form-control" id="id_prenom_interlocuteur" name="prenom_interlocuteur" value="{{contrat.prenom_interlocuteur}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_duree_contrat">Durée contrat (mois)</label>
+                        <input type="number" class="form-control" id="id_duree_contrat" name="duree_contrat" value="{{contrat.duree_contrat}}">
+                    </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-7 col-md-12">
+    <div id="articles-form">
+        <div class="alert alert-default background-default mb-2" style="color: black !important;">Ajouter des articles ici</div>
+        <div style="text-align:right">
+            <button type="button" class="btn btn-primary btn-sm" style="font-size:0.8em;" id="add-article-btn"><i class="fas fa-plus"></i> Ajouter Article</button>
+        </div>
+    </div>
+</div>
+<div style="text-align:center !important; width:100%;">
+    <button type="button" class="btn btn-success btn-lg" onclick="sauvegarderContrat()" >Sauvegarder Contrat</button>
+</div>
+
+
+<script
+  src="https://code.jquery.com/jquery-3.6.1.js"
+  integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
+  crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    function fill_article_row(numero_mobile, designation, mensualite)
+    {
+        var formHtml = `
+                <div class="card-body article-card">
+                    <div class="row">
+                        <div class="col-xl-4 col-md-4 col-4">
+                            <div class="form-group">
+                                <label class="form-label">Numéro mobile</label>
+                                <input type="text" class="form-control" id="numero_mobile" value="`+numero_mobile+`">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-md-6 col-6">
+                            <div class="form-group">
+                                <label class="form-label">Désignation</label>
+                                <input type="text" class="form-control" id="designation" value="`+designation+`">
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-2 col-2">
+                            <div class="form-group">
+                                <label class="form-label">Mensualité</label>
+                                <input type="number" class="form-control" id="mensualite" value="`+mensualite+`">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align:right">
+                        <button type="button" class="btn btn-danger btn-sm" style="font-size:0.8em;" onclick="removeArticle(this)"><i class="fas fa-trash"></i> </button>
+                    </div>
+                </div>` 
+        return formHtml
+    }
+    
+    var id_contrat;
+    $( document ).ready(function() {
+    id_contrat = "{{contrat.id|safe}}"
+    if (id_contrat == "")
+    {
+        id_contrat = 0
+
+        $( "#id_date_contrat" ).datepicker(
+        {
+        dateFormat: "yy-mm-dd"
+        });
+        $("#id_date_contrat").datepicker("setDate", "{{date_today|date:'Y-m-d'}}");
+
+    }else
+    {
+
+        $(function() {
+            $( "#id_date_contrat" ).datepicker(
+                {
+                dateFormat: "yy-mm-dd"
+                });
+                $("#id_date_contrat").datepicker("setDate", "{{contrat.date_contrat|date:'Y-m-d'}}");
+            });
+
+
+        $("#id_sexe_interlocuteur").val("{{contrat.sexe_interlocuteur}}")
+        articles_list = {{articles_list|safe}}
+        console.log(articles_list)
+        console.log(articles_list.length)
+        for(i=0; i<articles_list.length; i++)
+        {
+            add_article_div(articles_list[i]['numero_mobile'], articles_list[i]['designation'], articles_list[i]['mensualite'])
+        }
+    }
+
+    });
+    // JavaScript for adding and removing article inputs
+    document.getElementById('add-article-btn').addEventListener('click', function() {
+
+        add_article_div("","","");
+
+    });
+
+
+    function add_article_div(numero_mobile, designation, mensualite)
+    {
+        var div = document.createElement('div');
+        div.classList.add('card');
+        div.classList.add('mt-3');
+        div.innerHTML = fill_article_row(numero_mobile, designation, mensualite);
+
+        document.getElementById('articles-form').appendChild(div);
+
+    }
+
+
+    function removeArticle(button) {
+            button.closest('.card').remove();
+        }
+
+    function sauvegarderContrat() {
+        // Création du dictionnaire pour stocker les valeurs du contrat
+        var contratData = {
+            'date_contrat': document.getElementById('id_date_contrat').value,
+            'numero_client': document.getElementById('id_numero_client').value,
+            'raison_sociale': document.getElementById('id_raison_sociale').value,
+            'rue': document.getElementById('id_rue').value,
+            'zipcode': document.getElementById('id_zipcode').value,
+            'npa': document.getElementById('id_npa').value,
+            'localite': document.getElementById('id_localite').value,
+            'sexe_interlocuteur': document.getElementById('id_sexe_interlocuteur').value,
+            'nom_interlocuteur': document.getElementById('id_nom_interlocuteur').value,
+            'prenom_interlocuteur': document.getElementById('id_prenom_interlocuteur').value,
+            'duree_contrat': document.getElementById('id_duree_contrat').value,
+            'articles': []
+        };
+
+        // Récupération des articles ajoutés
+        var articleCards = document.querySelectorAll('.article-card');
+        articleCards.forEach(function(card) {
+            var articleData = {
+                'numero_mobile': card.querySelector('input[id*="numero_mobile"]').value,
+                'designation': card.querySelector('input[id*="designation"]').value,
+                'mensualite': card.querySelector('input[id*="mensualite"]').value
+            };
+            // Ajout de l'article à la liste d'articles dans le dictionnaire de contrat
+            contratData['articles'].push(articleData);
+        });
+
+        // Affichage des données du contrat dans la console (pour vérification)
+        sauvegarder_contrat(contratData)
+        // Vous pouvez envoyer ces données à votre serveur ici pour traitement
+    }
+
+
+    function sauvegarder_contrat(data)
+    {
+
+        data_dict={
+            "action":"save_contrat",
+            "id_contrat": id_contrat,
+            "data": data}
+        $.ajax({
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            url: "{% url 'ajax_calls' %}",
+            data : JSON.stringify(data_dict),
+            success: function (response) {
+            if (response["errors"] == 0)
+            {
+                Swal.fire(
+                'Enregistré!',
+                'Contrat sauvegardé avec succès',
+                'success'
+                )
+            }else
+            {
+                Swal.fire(
+                'Error',
+                response["error_message"],
+                'error'
+                )
+            }
+
+            $("#" + id_version).closest(".version_card").remove()
+        }
+        })
+
+    }
+
+</script>
+
+{% endblock %}

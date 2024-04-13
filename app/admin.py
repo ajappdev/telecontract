@@ -13,3 +13,16 @@ class PermissionsUserProfileAdmin(admin.ModelAdmin):
 @admin.register(am.UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(am.Contrat)
+class ContratAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(am.Article)
+class ArticleAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(am.Cycle)
+class CycleAdmin(admin.ModelAdmin):
+    pass
