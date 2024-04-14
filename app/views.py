@@ -284,7 +284,6 @@ def ajax_calls(request):
             error = 0
             error_text = ""
             try:
-                print(received_json_data['contrat_id'])
                 am.Contrat.objects.filter(
                     id=int(received_json_data['contrat_id'])).delete()
             except Exception as e:
