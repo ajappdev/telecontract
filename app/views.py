@@ -16,6 +16,8 @@ import app.methods as af
 import json
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
+import random
 
 # DECLARING FONCTIONS
 @login_required(login_url='/auth/login/')
@@ -224,6 +226,15 @@ def ajax_calls(request):
         elif action == "filter_contrats_list":
 
             contrat_date = received_json_data['date_contrat']
+            numero_client = received_json_data['numero_client']
+            raison_sociale = received_json_data['raison_sociale']
+            rue = received_json_data['rue']
+            zipcode = received_json_data['zipcode']
+            npa = received_json_data['npa']
+            localite = received_json_data['localite']
+            nom_interlocuteur = received_json_data['nom_interlocuteur']
+            prenom_interlocuteur = received_json_data['prenom_interlocuteur']
+            
             page = received_json_data['page']
 
             if contrat_date:
@@ -235,12 +246,28 @@ def ajax_calls(request):
                     ac.DATE_SHORT_LOCAL_WITH_DASH)
 
                 contrats = am.Contrat.objects.filter(
-                    date_transaction__lte=contrat_before,
-                    date_transaction__gte=contrat_after,
+                    numero_client__icontains = numero_client,
+                    raison_sociale__icontains = raison_sociale,
+                    rue__icontains = rue,
+                    zipcode__icontains = zipcode,
+                    npa__icontains = npa,
+                    localite__icontains = localite,
+                    nom_interlocuteur__icontains = nom_interlocuteur,
+                    prenom_interlocuteur__icontains = prenom_interlocuteur,
+                    date_contrat__lte=contrat_before,
+                    date_contrat__gte=contrat_after
                 ).order_by("-date_contrat")
 
             else:
                 contrats = am.Contrat.objects.filter(
+                numero_client__icontains = numero_client,
+                raison_sociale__icontains = raison_sociale,
+                rue__icontains = rue,
+                zipcode__icontains = zipcode,
+                npa__icontains = npa,
+                localite__icontains = localite,
+                nom_interlocuteur__icontains = nom_interlocuteur,
+                prenom_interlocuteur__icontains = prenom_interlocuteur,
                 ).order_by("-date_contrat")
 
             contrats_list = ac.pagination(page, 10, contrats)
@@ -263,11 +290,12 @@ def ajax_calls(request):
             except Exception as e:
                 error_text = "EXCEPTION, AJAX_CALLS, DELETE_CONTRAT, 1, " + str(e)
                 error = 1
-            data_dict = {"error": error, "error_text": error_text}
+            data_dict = {"error": error, "error_text": str(error_text)}
 
         elif action == "save_contrat":
             error_message = ""
             errors = 0
+            contrat_id = 0
             try:
                 id_contrat = int(received_json_data['id_contrat'])
                 data = received_json_data['data']
@@ -293,6 +321,7 @@ def ajax_calls(request):
                     print(e)
                     contrat.date_contrat = date.today()
                 contrat.save()
+                contrat_id = contrat.id
                 if id_contrat == 0:
                     new_cycle = am.Cycle()
                     new_cycle.contrat = contrat
@@ -312,7 +341,7 @@ def ajax_calls(request):
             except Exception as e:
                 error_message = e
                 errors = 1
-            data_dict = {"error_message": str(error_message), "errors": errors}
+            data_dict = {"error_message": str(error_message), "errors": errors, "contrat_id": contrat_id}
 
         elif action == "get_cycle_info":
             cycle = am.Cycle.objects.get(
@@ -340,11 +369,12 @@ def ajax_calls(request):
                 new_cycle.date_debut = date.today()
                 new_cycle.date_fin = date.today() + relativedelta(
                     months=cycle.contrat.duree_contrat)
+                new_cycle.duree_prolongation = relativedelta(new_cycle.date_fin, date.today()).month
                 new_cycle.save()
             except Exception as e:
                 errors = 1
                 error_message = e
-            data_dict = {"errors": errors, "error_message": error_message}
+            data_dict = {"errors": errors, "error_message": str(error_message)}
 
         elif action == "supprimer_cycle_payment":
             errors = 0
@@ -417,5 +447,3 @@ def ajax_calls(request):
 
 
     return JsonResponse(data=data_dict, safe=False)
-
-

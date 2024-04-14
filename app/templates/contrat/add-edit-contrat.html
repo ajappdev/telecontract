@@ -231,6 +231,7 @@
             url: "{% url 'ajax_calls' %}",
             data : JSON.stringify(data_dict),
             success: function (response) {
+            
             if (response["errors"] == 0)
             {
                 Swal.fire(
@@ -238,6 +239,7 @@
                 'Contrat sauvegardé avec succès',
                 'success'
                 )
+                id_contrat = response["contrat_id"]
             }else
             {
                 Swal.fire(

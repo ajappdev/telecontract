@@ -46,20 +46,10 @@
                             <input type="text" id="filter_localite" class="form-control filter_input" placeholder="{% trans 'Localité' %}">
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
-                            <select id="filter_sexe_interlocuteur" class="form-control filter_input_change">
-                                <option value="">{% trans 'Sexe interlocuteur' %}</option>
-                                <option value="M">{% trans 'M' %}</option>
-                                <option value="Mme">{% trans 'Mme' %}</option>
-                            </select>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
                             <input type="text" id="filter_nom_interlocuteur" class="form-control filter_input" placeholder="{% trans 'Nom interlocuteur' %}">
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
                             <input type="text" id="filter_prenom_interlocuteur" class="form-control filter_input" placeholder="{% trans 'Prénom interlocuteur' %}">
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
-                            <input type="number" id="filter_duree_contrat" class="form-control filter_input" placeholder="{% trans 'Durée contrat' %}">
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
                             <input id="filter_contrat_date" class="form-control filter_input_change" placeholder="{% trans 'Date de contrat' %}">
@@ -249,7 +239,23 @@ data_dict = {
 
 });
 
+$(window).scroll(function() {
+    var datePicker = $('#cycle_date_fin').datepicker();
+    datePicker.datepicker('hide');
+    $('#cycle_date_fin').blur();
+    var datePicker2 = $('#cycle_date_debut').datepicker();
+    datePicker2.datepicker('hide');
+    $('#cycle_date_debut').blur();
+});
 
+$(window).resize(function() {
+    var datePicker = $('#cycle_date_fin').datepicker();
+    datePicker.datepicker('hide');
+    $('#cycle_date_fin').blur();
+    var datePicker2 = $('#cycle_date_debut').datepicker();
+    datePicker2.datepicker('hide');
+    $('#cycle_date_debut').blur();
+});
 
 $(document).on("click", ".supprimer_cycle_button", function() {
 
@@ -345,7 +351,7 @@ if (result.isConfirmed) {
                 title: 'Une erreur est survenue!',
                 position: 'center',
                 showConfirmButton: false,
-                text: response['error_text'],
+                text: response['error_message'],
             })
         }else
         {
@@ -403,7 +409,7 @@ if (result.isConfirmed) {
                 title: 'Une erreur est survenue!',
                 position: 'center',
                 showConfirmButton: false,
-                text: response['error_text'],
+                text: response['error_message'],
             })
         }else
         {
@@ -440,10 +446,8 @@ if (result.isConfirmed) {
         "zipcode": $("#filter_zipcode").val(),
         "npa": $("#filter_npa").val(),
         "localite": $("#filter_localite").val(),
-        "sexe_interlocuteur": $("#filter_sexe_interlocuteur").val(),
         "nom_interlocuteur": $("#filter_nom_interlocuteur").val(),
         "prenom_interlocuteur": $("#filter_prenom_interlocuteur").val(),
-        "duree_contrat": $("#filter_duree_contrat").val(),
         "date_contrat": $("#filter_contrat_date").val(),
         "page": filter_page
     };
