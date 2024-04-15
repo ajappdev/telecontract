@@ -271,7 +271,7 @@ data_dict = {
                 $(".link_consulter").attr("href", `../../afficher-document/` + cycle_id)
             }
 
-            if(responseCycle['file_name'] != "En cours")
+            if(responseCycle['statut'] != "En cours")
             {
                 $("#cycle_date_fin").attr("disabled", true)
                 $("#cycle_date_debut").attr("disabled", true)
