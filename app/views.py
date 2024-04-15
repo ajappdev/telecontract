@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.conf import settings
 
 # APP DECLARATIONS
 import app.models as am
@@ -13,6 +14,7 @@ import app.common as ac
 import app.methods as af
 
 # GENERAL DECLARATIONS
+import os
 import json
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
@@ -161,6 +163,63 @@ def get_prolongation_file(request, pk):
     return af.generate_pdf(request, cycle)
 
 @login_required(login_url='/auth/login/')
+def afficher_document(request, pk: int):
+    cycle = am.Cycle.objects.get(id=pk)
+    file_name = ""
+    for filename in os.listdir('media/documents/'):
+        name, extension = os.path.splitext(filename)
+        if name == str(cycle.id):
+            file_name = name + extension
+
+    if file_name != "":
+        return render(
+            request, 'view-file.html',
+            {'file_name': file_name,
+                "MEDIA_URL": settings.MEDIA_URL})
+    else:
+        return render(request, 'file-not-found.html')
+
+@login_required(login_url='/auth/login/')
+def save_cycle(request):
+
+    if request.method == 'POST':
+        cycle_id = request.POST.get('cycle_id')
+        new_date_debut = request.POST.get('new_date_debut')
+        new_date_fin = request.POST.get('new_date_fin')
+        file = request.FILES.get('file')
+
+        cycle = am.Cycle.objects.get(
+            id=int(cycle_id))
+        if cycle.statut == "En cours":
+            cycle.date_debut = datetime.strptime(
+                str(new_date_debut),
+                ac.DATE_SHORT_LOCAL_WITH_DASH)
+            cycle.date_fin = datetime.strptime(
+                str(new_date_fin),
+                ac.DATE_SHORT_LOCAL_WITH_DASH)
+            cycle.save()
+
+        if file:
+            file_name, file_extension = os.path.splitext(file.name)
+
+            for filename in os.listdir('media/documents/'):
+                name, extension = os.path.splitext(filename)
+                if name == str(cycle.id):
+                    file_path = os.path.join("media/documents/", filename)
+                    os.remove(file_path)
+
+            with open(f'media/documents/{cycle.id}{file_extension}', 'wb') as f:
+                for chunk in file.chunks():
+                    f.write(chunk)
+
+        data_dict = {
+            "date_debut": cycle.date_debut.strftime(ac.DATE_SHORT_LOCAL_WITH_DASH),
+            "date_fin": cycle.date_fin.strftime(ac.DATE_SHORT_LOCAL_WITH_DASH),
+            "statut": cycle.statut}
+        
+    return JsonResponse(data=data_dict, safe=False)
+
+@login_required(login_url='/auth/login/')
 def ajax_calls(request):
     if request.method == 'POST':
         received_json_data = json.loads(request.body)
@@ -223,11 +282,22 @@ def ajax_calls(request):
 
             data_dict = {}
 
+        elif action == "delete_file":
+            cycle = am.Cycle.objects.get(id=int(received_json_data['cycle_id']))
+            for filename in os.listdir('media/documents/'):
+                name, extension = os.path.splitext(filename)
+                if name == str(cycle.id):
+                    file_path = os.path.join("media/documents/", filename)
+                    os.remove(file_path)
+            data_dict = {}
+
         elif action == "filter_contrats_list":
 
+            filter_contrat_end_in = received_json_data['filter_contrat_end_in']
             contrat_date = received_json_data['date_contrat']
             numero_client = received_json_data['numero_client']
             raison_sociale = received_json_data['raison_sociale']
+            filter_contrat_telephone = received_json_data['filter_contrat_telephone']
             rue = received_json_data['rue']
             zipcode = received_json_data['zipcode']
             npa = received_json_data['npa']
@@ -270,14 +340,35 @@ def ajax_calls(request):
                 prenom_interlocuteur__icontains = prenom_interlocuteur,
                 ).order_by("-date_contrat")
 
+            if filter_contrat_telephone != "":
+                articles = am.Article.objects.filter(
+                    contrat_id__in=[c.id for c in contrats],
+                    numero_mobile__icontains=filter_contrat_telephone)
+                contrats = [a.contrat for a in articles]
+
+            if filter_contrat_end_in != "":
+                jours = int(filter_contrat_end_in.split(" jours")[0])
+                jour_reference = date.today() + timedelta(jours)
+            else:
+                jour_reference = date.today() + timedelta(60000)
+
+            cycles = am.Cycle.objects.filter(
+                contrat_id__in=[c.id for c in contrats],
+                statut='En cours',
+                date_fin__lte=jour_reference).order_by("date_fin")
+            
+            contrats = [c.contrat for c in cycles]
+
             contrats_list = ac.pagination(page, 10, contrats)
 
             html = render_to_string(
                         template_name="contrat/widgets/table-contrats.html", 
                         context={
                             "contrats": contrats_list,
+                            "MEDIA_URL": settings.MEDIA_URL
                         }
                     )
+            
             data_dict = {"html": html}
 
         elif action == "delete_contrat":
@@ -345,11 +436,19 @@ def ajax_calls(request):
         elif action == "get_cycle_info":
             cycle = am.Cycle.objects.get(
                 id=int(received_json_data['cycle_id']))
+            file_name = ""
+            for filename in os.listdir('media/documents/'):
+                name, extension = os.path.splitext(filename)
+                if name == str(cycle.id):
+                    file_name = name + extension
+            print(settings.MEDIA_URL)
             data_dict = {
                 "date_debut": cycle.date_debut.strftime(ac.DATE_SHORT_LOCAL_WITH_DASH),
                 "date_fin": cycle.date_fin.strftime(ac.DATE_SHORT_LOCAL_WITH_DASH),
                 "statut": cycle.statut,
                 "paye_le": cycle.statut,
+                "file_name": file_name,
+                "MEDIA_URL": settings.MEDIA_URL,
                 "duree_prolongation": cycle.duree_prolongation}
             
         elif action == "marquer_cycle_comme_paye":
@@ -401,21 +500,6 @@ def ajax_calls(request):
                 errors = 1
                 error_message = e
             data_dict = {"errors": errors, "error_message": str(error_message)}
-
-        elif action == "save_cycle":
-            cycle = am.Cycle.objects.get(
-                id=int(received_json_data['cycle_id']))
-            cycle.date_debut = datetime.strptime(
-                str(received_json_data['new_date_debut']),
-                ac.DATE_SHORT_LOCAL_WITH_DASH)
-            cycle.date_fin = datetime.strptime(
-                str(received_json_data['new_date_fin']),
-                ac.DATE_SHORT_LOCAL_WITH_DASH)
-            cycle.save()
-            data_dict = {
-                "date_debut": cycle.date_debut.strftime(ac.DATE_SHORT_LOCAL_WITH_DASH),
-                "date_fin": cycle.date_fin.strftime(ac.DATE_SHORT_LOCAL_WITH_DASH),
-                "statut": cycle.statut}
             
         elif action == "add_user":
 

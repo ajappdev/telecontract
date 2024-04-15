@@ -2,6 +2,7 @@
 {% block page_content %}
 
 {% load i18n %}
+{% load static %}
 {% load humanize %}
 
 
@@ -53,6 +54,19 @@
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
                             <input id="filter_contrat_date" class="form-control filter_input_change" placeholder="{% trans 'Date de contrat' %}">
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
+                            <select id="filter_contrat_end_in" class="form-control filter_input_change">
+                                <option value="">Fin de contrat dans</option>
+                                <option value="30 jours">30 jours</option>
+                                <option value="60 jours">60 jours</option>
+                                <option value="90 jours">90 jours</option>
+                                <option value="120 jours">120 jours</option>
+                                <option value="180 jours">180 jours</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
+                            <input id="filter_contrat_telephone" class="form-control filter_input" placeholder="{% trans 'Numéro de téléphone' %}">
                         </div>
                     </div>
                 </div>
@@ -148,10 +162,12 @@ filter_results(0);
 });
 
 
+var cycle_id_modifier = 0
 
 $(document).on('click', '.modifier_cycle_button', function (){
 
 cycle_id = $(this).closest("tr").find(".cycle_id").text()
+cycle_id_modifier = cycle_id
 contrat_id = $(this).closest(".contrat_card").find(".contrat_id_span").text()
 data_dict = {
     "action": "get_cycle_info",
@@ -167,6 +183,7 @@ data_dict = {
     url: "{% url 'ajax_calls' %}",
     data: JSON.stringify(data_dict),
     success: function(responseCycle) {
+
         var html_gerer_cycle = `
         <div class="row" style="text-align: left !important;">
             <div class="col-xl-12 col-md-12">
@@ -177,6 +194,15 @@ data_dict = {
                 <div class="form-group">
                     <label class="form-label" for="date_fin">Date de fin</label>
                     <input type="text" class="form-control" id="cycle_date_fin">
+                </div>
+                <div class="form-group">
+                    <input type="file" id="file-input" accept="image/*, .pdf">
+                    <div style="text-align:center;">
+                        <img style="display:none; height: 100px;" id="file-image" src="{% static 'assets/images/file-image.png' %}" alt="Profile Picture">
+                        <p id="file_name_upload" class="mb-3" style="font-weight:600;"></p>
+
+                        <p id="file_links" style="display:none;"><a target="_blank" class="link_file link_consulter">Consulter</a><a class="link_file link_modifier">Modifier</a><a class="link_file link_supprimer">Supprimer</a></p>
+                    </div>
                 </div>
             </div>
         </div>`
@@ -192,18 +218,23 @@ data_dict = {
             cancelButtonText: 'Annuler'
             }).then((result) => {
             if (result.isConfirmed) {
-                data_dict={
-                    "action":"save_cycle",
-                    "cycle_id": cycle_id,
-                    "new_date_debut": $("#cycle_date_debut").val(),
-                    "new_date_fin": $("#cycle_date_fin").val()}
+
+                const fileInput = document.getElementById('file-input');
+                const file = fileInput.files[0];
+
+                var formData = new FormData();
+                formData.append('file', file);
+                formData.append('cycle_id', cycle_id);
+                formData.append('new_date_debut', $("#cycle_date_debut").val());
+                formData.append('new_date_fin', $("#cycle_date_fin").val());
+
                 $.ajax({
                     headers: { "X-CSRFToken": getCookie("csrftoken") },
                     type: 'POST',
                     processData: false,
                     contentType: false,
-                    url: "{% url 'ajax_calls' %}",
-                    data : JSON.stringify(data_dict),
+                    url: "{% url 'save_cycle' %}",
+                    data : formData,
                     success: function (response) {
                     Swal.fire(
                         'Modifié!',
@@ -231,6 +262,20 @@ data_dict = {
                 });
                 $("#cycle_date_debut").datepicker("setDate", responseCycle['date_debut']);
             });
+
+            if (responseCycle['file_name'] != "")
+            {
+                $("#file-input").hide()
+                $("#file-image").show()
+                $("#file_links").show()
+                $(".link_consulter").attr("href", `../../afficher-document/` + cycle_id)
+            }
+
+            if(responseCycle['file_name'] != "En cours")
+            {
+                $("#cycle_date_fin").attr("disabled", true)
+                $("#cycle_date_debut").attr("disabled", true)
+            }
 
     }
     })
@@ -372,6 +417,56 @@ if (result.isConfirmed) {
 
 });
 
+$(document).on('click', '.link_modifier', function() {
+    document.getElementById('file-input').click();
+});
+
+$(document).on('click', '.link_supprimer', function() {
+
+data_dict = {
+    "action": "delete_file",
+    "cycle_id": cycle_id_modifier,
+    }
+    $.ajax({
+    headers: {
+        "X-CSRFToken": getCookie("csrftoken")
+    },
+    type: 'POST',
+    processData: false,
+    contentType: false,
+    url: "{% url 'ajax_calls' %}",
+    data: JSON.stringify(data_dict),
+    success: function(response) {
+        document.getElementById('file-input').input = '';
+        $("#file_name_upload").html("")
+        $("#file-image").hide("")
+        $("#file_links").hide("")
+        $("#file-input").show("")
+    }
+    })
+
+
+});
+
+$(document).on('change', '#file-input', function(event) {
+  const fileInput = event.target;
+    const profilePicture = document.getElementById('file_name_upload');
+  if (fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    profilePicture.innerHTML = `${fileInput.files[0].name}`;
+    reader.onload = function(e) {
+      $("#file-image").show("")
+      $("#file_links").show("")
+      $("#file-input").hide("")
+    };
+
+    reader.readAsDataURL(fileInput.files[0]);
+
+
+
+
+  }
+});
 
 $(document).on("click", ".delete-contrat-btn", function() {
 
@@ -442,7 +537,9 @@ if (result.isConfirmed) {
         "action": "filter_contrats_list",
         "numero_client": $("#filter_numero_client").val(),
         "raison_sociale": $("#filter_raison_sociale").val(),
+        "filter_contrat_telephone": $("#filter_contrat_telephone").val(),
         "rue": $("#filter_rue").val(),
+        "filter_contrat_end_in": $("#filter_contrat_end_in").val(),
         "zipcode": $("#filter_zipcode").val(),
         "npa": $("#filter_npa").val(),
         "localite": $("#filter_localite").val(),
@@ -478,5 +575,20 @@ if (result.isConfirmed) {
 }
 
 </script>
+
+<style>
+
+.link_file
+{
+    margin-right: 5px;
+    margin-left: 5px;
+    cursor:pointer;
+}
+.link_file:hover
+{
+    color:blue !important;
+}
+
+</style>
 
 {% endblock %}

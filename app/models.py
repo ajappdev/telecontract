@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Sum, Count, F, Max, Min
 
 # GENERAL DECLARATIONS
+import os
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
@@ -166,6 +167,15 @@ class Cycle(models.Model):
     duree_prolongation = models.IntegerField(default = 0, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def get_file(self):
+        file_name = ""
+        for filename in os.listdir('media/documents/'):
+            name, extension = os.path.splitext(filename)
+            if name == str(self.id):
+                file_name = name + extension
+
+        return file_name
 
     def pourcentage_cycle(self):
         if self.statut == 'Payé':

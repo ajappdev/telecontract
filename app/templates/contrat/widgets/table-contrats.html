@@ -29,7 +29,7 @@
                                 </p>
                             </div>
 
-                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mb-3 mt-3" style="margin: 0 !important;">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mb-3 mt-3" style="margin: 0 !important">
                                 <p class="text-muted contrats_renouvelements_projects_list p-no-m mb-0 text-center">
                                     <i class="fas fa-clock"></i> {{contrat.jours_au_payment|intcomma}} jours<br>
                                     <span style="font-size:0.5em;">jusqu'au prochain renouvelement</span><br>
@@ -96,9 +96,8 @@
                                                         <button title="Modifier le cycle de payment" class="modifier_cycle_button btn btn-sm btn-secondary"><i class="fas fa-pen"></i></button>
                                                         <button title="Marquer ce cycle comme payé" class="payer_cycle_button btn btn-sm btn-success"><i class="fas fa-check"></i></button>
                                                         <button title="Supprimer le cycle de payment" class="supprimer_cycle_button btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                                                        <a href="{% url 'get_prolongation_file' t.id|safe %}" title="Télécharger fichir de prolongation" class="update_cycle_button btn btn-sm btn-warning"><i class="fas fa-file"></i></a>
                                                         {% else %}
-                                                        <a href="{% url 'get_prolongation_file' t.id|safe %}" title="Télécharger fichir de prolongation" class="update_cycle_button btn btn-sm btn-warning"><i class="fas fa-file"></i></a>
+                                                        <button title="Modifier le cycle de payment" class="modifier_cycle_button btn btn-sm btn-secondary"><i class="fas fa-pen"></i></button>
                                                     {% endif %}
                                                 </td>
                                             </tr>

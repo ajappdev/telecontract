@@ -14,7 +14,9 @@ urlpatterns = [
     path('contrat/edit/<int:pk>', av.edit_contrat, name='edit_contrat'),
     path('prolongation/<int:pk>', av.get_prolongation_file, name='get_prolongation_file'),
     path('settings/manage-user/', av.manage_users, name='manage_users'),
-    path('no-permissions/', av.no_permissions, name='no_permissions')
+    path('no-permissions/', av.no_permissions, name='no_permissions'),
+    path('save-cycle/', av.save_cycle, name='save_cycle'),
+    path('afficher-document/<int:pk>', av.afficher_document, name='afficher_document'),
 ]
 
 
