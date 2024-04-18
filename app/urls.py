@@ -7,7 +7,6 @@ import app.views as av
 
 urlpatterns = [
     path('', av.landing_page, name='landing_page'),
-    path('auth/register/', av.register, name='register'),
     path('ajax-calls/', av.ajax_calls, name='ajax_calls'),
     path('contrat/add/', av.add_contrat, name='add_contrat'),
     path('contrat/filtre/', av.contrats, name='contrats'),

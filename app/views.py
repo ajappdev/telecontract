@@ -12,6 +12,7 @@ import app.models as am
 import app.forms as af
 import app.common as ac
 import app.methods as af
+import app.decorators as ad
 
 # GENERAL DECLARATIONS
 import os
@@ -29,72 +30,12 @@ def landing_page(request):
     return render(request, template, context)
 
 
-def register(request):
-    register_form = af.RegisterForm()
-    registration_errors = ""
-    if request.method == "POST":
-        register_form = af.RegisterForm(request.POST)
-        if register_form.is_valid():
-            print("sss")
-            if am.User.objects.filter(email=request.POST['email']).exists():
-                registration_errors = "Another account exists with the same email"
-                template = 'registration/register.html'
-                context = {
-                    "register_form": register_form,
-                    "registration_errors": registration_errors}
-                return render(request, template, context)
-
-            elif request.POST['password1'] != request.POST['password2']:
-                registration_errors = "The two passwords are not identical"
-                template = 'registration/register.html'
-                context = {
-                    "register_form": register_form,
-                    "registration_errors": registration_errors}
-                return render(request, template, context)
-            else:
-                user = am.User.objects.create_user(
-                    request.POST['email'].split("@")[0],
-                    request.POST['email'],
-                    request.POST['password1']
-                )
-                company = am.Company()
-                company.company_name = request.POST['id_company']
-                company.save()
-
-                user_profile = am.UserProfile()
-                user_profile.user = user
-                user_profile.complete_name = request.POST['id_complete_name']
-                user_profile.company = company
-                user_profile.save()
-
-                # Giving all permissions to the user
-                for per in ac.APP_PERMISSIONS:
-                    user_permission = am.PermissionsUserProfile()
-                    user_permission.user_profile = user_profile
-                    user_permission.permission_name = per[0]
-                    user_permission.views = [view for view in per[1]]
-                    user_permission.save()
-
-                login(request, user)
-
-                return redirect("/")
-        else:
-            registration_errors = register_form.errors
-
-    template = 'registration/register.html'
-    context = {
-        "register_form": register_form,
-        "registration_errors": registration_errors}
-    return render(request, template, context)
-
-
 @login_required(login_url='/auth/login/')
 def projects_list(request):
     """
     In this view, we see the list of projects with a button to see the roadmap
     and detail of versions
     """
-
     projects = am.Project.objects.filter(
         company=request.user.user_profile.company)
 
@@ -107,28 +48,34 @@ def projects_list(request):
 
 @login_required(login_url='/auth/login/')
 def add_contrat(request):
+    utilisateurs = am.UserProfile.objects.filter(role="Utilisateur")
     template = 'contrat/add-edit-contrat.html'
-    context = {}
+    context = {"utilisateurs": utilisateurs}
     return render(request, template, context)
 
 
 @login_required(login_url='/auth/login/')
 def edit_contrat(request, pk: int):
     contrat = am.Contrat.objects.get(id=pk)
+    utilisateurs = am.UserProfile.objects.filter(role="Utilisateur")
     articles = am.Article.objects.filter(contrat=contrat)
     articles_list = [
         {"numero_mobile": a.numero_mobile,
          "designation": a.designation,
          "mensualite": a.mensualite} for a in articles]
     template = 'contrat/add-edit-contrat.html'
-    context = {"contrat": contrat, "articles_list": articles_list}
+    context = {
+        "contrat": contrat,
+        "articles_list": articles_list,
+        "utilisateurs": utilisateurs}
     return render(request, template, context)
 
 
 @login_required(login_url='/auth/login/')
 def contrats(request):
     template = 'contrat/contrats.html'
-    context = {}
+    utilisateurs = am.UserProfile.objects.filter(role="Utilisateur")
+    context = {"utilisateurs": utilisateurs}
     return render(request, template, context)
 
 
@@ -138,6 +85,7 @@ def contrats(request):
 
 
 @login_required(login_url='/auth/login/')
+@ad.admin_required
 def manage_users(request):
 
     users = am.UserProfile.objects.filter(~Q(user_id=request.user.id))
@@ -152,15 +100,16 @@ def manage_users(request):
 
 
 def no_permissions(request):
-
     template = 'no-permissions.html'
     context = {}
     return render(request, template, context)
+
 
 @login_required(login_url='/auth/login/')
 def get_prolongation_file(request, pk):
     cycle = am.Cycle.objects.get(id=pk)
     return af.generate_pdf(request, cycle)
+
 
 @login_required(login_url='/auth/login/')
 def afficher_document(request, pk: int):
@@ -304,7 +253,10 @@ def ajax_calls(request):
             localite = received_json_data['localite']
             nom_interlocuteur = received_json_data['nom_interlocuteur']
             prenom_interlocuteur = received_json_data['prenom_interlocuteur']
-            
+            try:
+                utilisateur = received_json_data['utilisateur']
+            except Exception as e:
+                utilisateur = ""
             page = received_json_data['page']
 
             if contrat_date:
@@ -339,6 +291,13 @@ def ajax_calls(request):
                 nom_interlocuteur__icontains = nom_interlocuteur,
                 prenom_interlocuteur__icontains = prenom_interlocuteur,
                 ).order_by("-date_contrat")
+
+            if request.user.user_profile.role == "Utilisateur":
+                contrats = contrats.filter(
+                    affectation=request.user.user_profile)
+            elif request.user.user_profile.role == "Administrateur" and utilisateur != "":
+                contrats = contrats.filter(
+                    affectation=utilisateur)
 
             if filter_contrat_telephone != "":
                 articles = am.Article.objects.filter(
@@ -394,6 +353,8 @@ def ajax_calls(request):
                 else:
                     contrat = am.Contrat()
                 contrat.numero_client = data['numero_client']
+                contrat.affectation = am.UserProfile.objects.get(
+                    id=int(data['affectation']))
                 contrat.raison_sociale = data['raison_sociale']
                 contrat.rue = data['rue']
                 contrat.zipcode = data['zipcode']
@@ -441,7 +402,7 @@ def ajax_calls(request):
                 name, extension = os.path.splitext(filename)
                 if name == str(cycle.id):
                     file_name = name + extension
-            print(settings.MEDIA_URL)
+
             data_dict = {
                 "date_debut": cycle.date_debut.strftime(ac.DATE_SHORT_LOCAL_WITH_DASH),
                 "date_fin": cycle.date_fin.strftime(ac.DATE_SHORT_LOCAL_WITH_DASH),
@@ -510,14 +471,14 @@ def ajax_calls(request):
                 status = "Error"
             else:
                 user = am.User.objects.create_user(
-                    received_json_data['user_email'].split("@")[0],
+                    received_json_data['user_login'],
                     received_json_data['user_email'],
                     received_json_data['user_password']
                 )
                 nv_id = user.id
                 user_profile = am.UserProfile()
                 user_profile.user = user
-                user_profile.complete_name = received_json_data['user_nom']
+                user_profile.role = "Utilisateur"
                 user_profile.save()
                 message = "Utilisateur crée avec succès!"
                 status = "Success"

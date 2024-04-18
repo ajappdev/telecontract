@@ -14,6 +14,10 @@ SEXE_INTERLOCUTTEUR = [
     ('Mme.', 'Mme.'),
 ]
 
+ROLES = [
+    ('Administrateur', 'Administrateur'),
+    ('Utilisateur', 'Utilisateur'),
+]
 
 STATUT_CYCLE = [
     ('En cours', 'En cours'),
@@ -22,23 +26,29 @@ STATUT_CYCLE = [
 ]
 
 
-
 class UserProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='user_profile')
-    complete_name = models.CharField(
-        max_length=200,
+    role = models.CharField(
+        max_length=100,
         blank=False,
-        null=False)
+        null=False,
+        choices=ROLES,
+        default='Administrateur')
     permissions = models.TextField(default='*')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.complete_name
+        return self.user.username
     
 
 class Contrat(models.Model):
+    affectation = models.ForeignKey(
+        UserProfile,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True)
     numero_client = models.CharField(
         max_length=200,
         blank=True,

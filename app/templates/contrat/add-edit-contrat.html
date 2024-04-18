@@ -63,6 +63,14 @@
                         <label class="form-label" for="id_duree_contrat">Durée contrat (mois)</label>
                         <input type="number" class="form-control" id="id_duree_contrat" name="duree_contrat" value="{{contrat.duree_contrat}}">
                     </div>
+                    <div class="form-group">
+                        <select class="form-control" id="id_affectation" name="affectation">
+                            <option value="" selected disabled>Attribuer à un utilisateur</option>
+                            {% for u in utilisateurs %}
+                                <option value="{{u.id|safe}}">{{u.user.username}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
             </div>
         </div>
     </div>
@@ -130,9 +138,9 @@
 
         $( "#id_date_contrat" ).datepicker(
         {
-        dateFormat: "yy-mm-dd"
+        dateFormat: "dd-mm-yy"
         });
-        $("#id_date_contrat").datepicker("setDate", "{{date_today|date:'Y-m-d'}}");
+        $("#id_date_contrat").datepicker("setDate", "{{date_today|date:'d-m-Y'}}");
 
     }else
     {
@@ -140,13 +148,14 @@
         $(function() {
             $( "#id_date_contrat" ).datepicker(
                 {
-                dateFormat: "yy-mm-dd"
+                dateFormat: "dd-mm-yy"
                 });
-                $("#id_date_contrat").datepicker("setDate", "{{contrat.date_contrat|date:'Y-m-d'}}");
+                $("#id_date_contrat").datepicker("setDate", "{{contrat.date_contrat|date:'d-m-Y'}}");
             });
 
 
         $("#id_sexe_interlocuteur").val("{{contrat.sexe_interlocuteur}}")
+        $("#id_affectation").val("{{contrat.affectation.id}}")
         articles_list = {{articles_list|safe}}
         console.log(articles_list)
         console.log(articles_list.length)
@@ -195,6 +204,7 @@
             'nom_interlocuteur': document.getElementById('id_nom_interlocuteur').value,
             'prenom_interlocuteur': document.getElementById('id_prenom_interlocuteur').value,
             'duree_contrat': document.getElementById('id_duree_contrat').value,
+            'affectation': document.getElementById('id_affectation').value,
             'articles': []
         };
 

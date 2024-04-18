@@ -68,6 +68,16 @@
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
                             <input id="filter_contrat_telephone" class="form-control filter_input" placeholder="{% trans 'Numéro de téléphone' %}">
                         </div>
+                        {% if request.user.user_profile.role == "Administrateur" %}
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
+                                <select id="filter_utilisateur" class="form-control filter_input_change">
+                                    <option value="" selected>Utilisateur</option>
+                                    {% for u in utilisateurs %}
+                                        <option value="{{u.id|safe}}">{{u.user.username}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -126,7 +136,7 @@ $( document ).ready(function() {
 var filter_page = 1
 $('#filter_contrat_date').daterangepicker({
     locale: {
-      format: 'YYYY-MM-DD',
+      format: 'DD-MM-YYYY',
       applyLabel: "Ok",
     }
 })
@@ -250,7 +260,7 @@ data_dict = {
             $(function() {
             $( "#cycle_date_fin" ).datepicker(
                 {
-                dateFormat: "yy-mm-dd"
+                dateFormat: "dd-mm-yy"
                 });
                 $("#cycle_date_fin").datepicker("setDate", responseCycle['date_fin']);
             });
@@ -258,7 +268,7 @@ data_dict = {
             $(function() {
             $( "#cycle_date_debut" ).datepicker(
                 {
-                dateFormat: "yy-mm-dd"
+                dateFormat: "dd-mm-yy"
                 });
                 $("#cycle_date_debut").datepicker("setDate", responseCycle['date_debut']);
             });
@@ -532,7 +542,6 @@ if (result.isConfirmed) {
 
     function filter_results(contrat_to_expand)
     {
-
         var data_dict = {
         "action": "filter_contrats_list",
         "numero_client": $("#filter_numero_client").val(),
@@ -546,6 +555,7 @@ if (result.isConfirmed) {
         "nom_interlocuteur": $("#filter_nom_interlocuteur").val(),
         "prenom_interlocuteur": $("#filter_prenom_interlocuteur").val(),
         "date_contrat": $("#filter_contrat_date").val(),
+        "utilisateur": $("#filter_utilisateur").val(),
         "page": filter_page
     };
 

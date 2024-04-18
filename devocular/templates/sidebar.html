@@ -12,10 +12,12 @@
                     <span class="pcoded-micon"><i class="fas fa-file"></i></span>
                     <span class="pcoded-mtext">Contrats</span>
                 </a>
+                {% if request.user.user_profile.role == "Administrateur" %}
                 <a href="{% url 'manage_users' %}">
                     <span class="pcoded-micon"><i class="fas fa-users"></i></span>
                     <span class="pcoded-mtext">Gérer les utilisateurs</span>
                 </a>
+                {% endif %}
                 <a href="{% url 'logout' %}">
                     <span class="pcoded-micon"><i class="fas fa-power-off"></i></span>
                     <span class="pcoded-mtext">Se déconnecter</span>
